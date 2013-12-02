@@ -38,6 +38,7 @@
       typeaheadDelegate: {},
       typeaheadSource: null,
       AjaxPush: null,
+      AjaxPushSingleTag: true,
       AjaxPushAllTags: null,
       AjaxPushParameters: null,
       delimiters: [9,13,44], // tab, enter, comma
@@ -250,11 +251,13 @@
       }
     };
 
-    var refreshHiddenTagList = function () {
+    var refreshHiddenTagList = function (refresh) {
       var tlis = obj.data("tlis");
       var lhiddenTagList = obj.data("lhiddenTagList");
 
-      obj.trigger('tags:refresh', tlis.join(baseDelimiter));
+      if(refresh){
+        obj.trigger('tags:refresh', tlis.join(baseDelimiter));
+      }
 
       if (lhiddenTagList) {
         $(lhiddenTagList).val(tlis.join(baseDelimiter)).change();
@@ -285,12 +288,13 @@
 
     var pushAllTags = function (e, tagstring) {
       if (tagManagerOptions.AjaxPushAllTags) {
-        $.post(tagManagerOptions.AjaxPush, { tags: tagstring });
+        $.post(tagManagerOptions.AjaxPush, $.extend({ tags: tagstring }, tagManagerOptions.AjaxPushParameters));
       }
     };
 
-    var pushTag = function (tag) {
+    var pushTag = function (tag, refresh) {
       tag = trimTag(tag);
+      if (typeof(refresh) === "undefined") { refresh = true; }
 
       if (!tag || tag.length <= 0) return;
 
@@ -341,7 +345,7 @@
         tlis.push(tag);
         tlid.push(tagId);
 
-        if (tagManagerOptions.AjaxPush != null) {
+        if (tagManagerOptions.AjaxPush != null && tagManagerOptions.AjaxPushSingleTag) {
           $.post(tagManagerOptions.AjaxPush, $.extend({ tag: tag }, tagManagerOptions.AjaxPushParameters));
         }
 
@@ -369,7 +373,7 @@
           spliceTag(TagIdToRemove, e.data);
         });
 
-        refreshHiddenTagList();
+        refreshHiddenTagList(refresh);
 
         if (tagManagerOptions.maxTags > 0 && tlis.length >= tagManagerOptions.maxTags) {
           obj.hide();
@@ -380,8 +384,9 @@
 
     var prefill = function (pta) {
       $.each(pta, function (key, val) {
-        pushTag(val);
+        pushTag(val, false);
       });
+      refreshHiddenTagList();
     };
 
     var killEvent = function (e) {
