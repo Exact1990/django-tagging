@@ -15,8 +15,8 @@ _default_settings = {
 
 
 class TagWidgetBase(TextInput):
-    def __init__(self, max_tags, *args, **kwargs):
-        self.max_tags = max_tags if max_tags else getattr(settings, 'TAGGING_AUTOSUGGEST_MAX_TAGS', 20)
+    def __init__(self, *args, **kwargs):
+        self.max_tags = kwargs.pop('max_tags', getattr(settings, 'TAGGING_AUTOSUGGEST_MAX_TAGS', 20))
         self.namespace = kwargs.pop('namespace', None)
         self.settings = kwargs.pop('settings', {})
         super(TagWidgetBase, self).__init__(*args, **kwargs)
