@@ -252,6 +252,7 @@
     };
 
     var refreshHiddenTagList = function (refresh) {
+      if (typeof(refresh) === "undefined") { refresh = true; }
       var tlis = obj.data("tlis");
       var lhiddenTagList = obj.data("lhiddenTagList");
 
