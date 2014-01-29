@@ -413,7 +413,7 @@ class TaggedItemManager(models.Manager):
         else:
             return model._default_manager.none()
 
-    def get_related(self, obj, queryset_or_model, num=None):
+    def get_related(self, obj, queryset_or_model, num=None, order_sql="", join_sql=""):
         """
         Retrieve a list of instances of the specified model which share
         tags with the model instance ``obj``, ordered by the number of
@@ -429,6 +429,7 @@ class TaggedItemManager(models.Manager):
         query = """
         SELECT %(model_pk)s, COUNT(related_tagged_item.object_id) AS %(count)s
         FROM %(model)s, %(tagged_item)s, %(tag)s, %(tagged_item)s related_tagged_item
+        %(join_sql)s
         WHERE %(tagged_item)s.object_id = %%s
           AND %(tagged_item)s.content_type_id = %(content_type_id)s
           AND %(tag)s.id = %(tagged_item)s.tag_id
@@ -442,8 +443,10 @@ class TaggedItemManager(models.Manager):
           AND related_tagged_item.object_id != %(tagged_item)s.object_id"""
         query += """
         GROUP BY %(model_pk)s
-        ORDER BY %(count)s DESC
+        ORDER BY %(count)s DESC, %(order_sql)s
         %(limit_offset)s"""
+        if order_sql != "":
+            order_sql = ", %s" % order_sql
         query = query % {
             'model_pk': '%s.%s' % (model_table, qn(model._meta.pk.column)),
             'count': qn('count'),
@@ -455,6 +458,8 @@ class TaggedItemManager(models.Manager):
             # Hardcoding this for now just to get tests working again - this
             # should now be handled by the query object.
             'limit_offset': num is not None and 'LIMIT %s' or '',
+            'order_sql': order_sql,
+            'join_sql': join_sql
         }
 
         cursor = connection.cursor()
