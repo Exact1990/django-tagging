@@ -443,7 +443,7 @@ class TaggedItemManager(models.Manager):
           AND related_tagged_item.object_id != %(tagged_item)s.object_id"""
         query += """
         GROUP BY %(model_pk)s
-        ORDER BY %(count)s DESC, %(order_sql)s
+        ORDER BY %(count)s DESC %(order_sql)s
         %(limit_offset)s"""
         if order_sql != "":
             order_sql = ", %s" % order_sql
