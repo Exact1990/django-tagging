@@ -428,8 +428,7 @@ class TaggedItemManager(models.Manager):
         related_content_type = ContentType.objects.get_for_model(model)
         query = """
         SELECT %(model_pk)s, COUNT(related_tagged_item.object_id) AS %(count)s
-        FROM %(model)s, %(tagged_item)s, %(tag)s, %(tagged_item)s related_tagged_item
-        %(join_sql)s
+        FROM %(model)s %(join_sql)s, %(tagged_item)s, %(tag)s, %(tagged_item)s related_tagged_item
         WHERE %(tagged_item)s.object_id = %%s
           AND %(tagged_item)s.content_type_id = %(content_type_id)s
           AND %(tag)s.id = %(tagged_item)s.tag_id
