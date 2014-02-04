@@ -16,8 +16,7 @@ class TagWidget(TagWidgetBase):
         if attrs is None:
             attrs = {}
         attrs.update({
-            'class': 'tm-input',
-            'placeholder': 'Tags',
+            'class': 'tm-input'
         })
 
         capitalize = 'true' if conf.FORCE_TAGS == 'upper' else 'false'
