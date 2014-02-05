@@ -21,7 +21,7 @@ class TagWidget(TagWidgetBase):
 
         capitalize = 'true' if conf.FORCE_TAGS == 'upper' else 'false'
         list_view = reverse('tagging:typeahead-suggest')
-        prefilled = '"' + '","'.join(value.split(' ')) + '"'
+        prefilled = '"' + '","'.join([str(x).decode('utf-8') for x in value]) + '"'
 
         if self.namespace is not None:
             list_view = '{0}?ns={1}'.format(list_view, self.namespace)
