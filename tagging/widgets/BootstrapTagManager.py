@@ -24,7 +24,10 @@ class TagWidget(TagWidgetBase):
         if value.__class__.__name__ == 'QuerySet':
             prefilled = '"' + '","'.join([str(x).decode('utf-8') for x in value]) + '"'
         else:
-            prefilled = '"' + '","'.join(value.split(',')) + '"'
+            if value is not None:
+                prefilled = '"' + '","'.join(value.split(',')) + '"'
+            else:
+                prefilled = '""'
 
         if self.namespace is not None:
             list_view = '{0}?ns={1}'.format(list_view, self.namespace)
